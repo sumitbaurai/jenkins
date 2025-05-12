@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    environment {
+        def myString = "Hello world"
+        def myNumber = 123
+        def myBool = true
+    }
+    parameters {
+        string(description : "deployment custom name : ",defaultValue: "jenkins-deployment", name: "pipelineName")
+        choice(choices : ["EU-WEST-2A","EU-WEST-2B","EU-WEST-2C"],description: "Which AZ?", name: "deployZone")
+        booleanParam(defaultValue: false,description: "Confirm Deployment?", name: "doDeployment")
+
+    }
+    stages{
+        stage ("variables demo"){
+            steps {
+                echo "Deployment with name  : ${params.pipelineName} should be deployed to : ${params.deployZone} : ${params.doDeployment}"
+                echo "myString  : ${myString} should be deployed to : ${myNumber} : ${myBool}"
+            }
+        }
+    }
+}

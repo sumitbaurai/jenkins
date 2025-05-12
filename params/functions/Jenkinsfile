@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+    parameters {
+        string(defaultValue : "TEST",description: "Which environment?", name: "deployEnv")
+    }
+    stages{
+        stage ("param demo"){
+            steps {
+                myFunc("func demo")
+            }
+        }
+    }
+}
+
+def myFunc(String myText){
+    echo "my Text is set to : ${myText}"
+}
