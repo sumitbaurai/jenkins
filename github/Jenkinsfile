@@ -22,7 +22,7 @@ def log(String message)
 pipeline {
     agent any
     parameters {
-      string   name: 'applicationName', defaultValue: 'CHANGEIT-jde-sys-api',  trim: true, description: 'Application Name. This field is required.'
+      string   name: 'applicationName',  trim: true, description: 'Application Name. This field is required.'
     }
     environment {
         GITHUB_TOKEN = credentials('personal_github')
@@ -40,25 +40,6 @@ pipeline {
                         }
 					}
                 }
-/*                
-        stage('Generate APP'){
-            steps {
-                script {
-					checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'WipeWorkspace']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-imcd', url: 'git@github.com:IMCDGroup-Mulesoft/${apiTemplate}.git']]]
-					sshagent (credentials: ['github-imcd']) {
-						sh "sudo rm -rf inner-archetype && sudo mkdir inner-archetype && cd inner-archetype && git fetch --all"
-						currentVersion = sh(label: "get latest archetype version", returnStdout: true, script: 'git describe').trim()
-					}
-					configFileProvider(
-                    [configFile(fileId: 'global-maven-settings', variable: 'MAVEN_SETTINGS', replaceTokens: true)]) {
-							withCredentials([string(credentialsId: 'cloudhub-DEV-enc-key', variable: 'SECRET')]) {
-								sh "sudo rm -rf inner-archetype && sudo rm -rf archetype-dir && sudo mkdir archetype-dir && cd archetype-dir && sudo mvn archetype:generate -DarchetypeGroupId=com.imcdgroup -DarchetypeArtifactId=${params.apiTemplate} -DarchetypeVersion=${currentVersion} -DgroupId=com.imcdgroup -DartifactId=${params.applicationName.trim()} -Dversion=1.0.0-SNAPSHOT -DapiVersion=${params.apiVersion} -Dentity=${params.entityName} -Devent=${params.methodName} -Dmethod=${params.methodName} -Ddomains=${params.domains} -s $MAVEN_SETTINGS"
-                        }
-                }
-                }
-            }
-        }
-        */
         
         stage('Create GitHub repository') {
             steps {
