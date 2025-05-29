@@ -56,6 +56,7 @@ pipeline {
                         url: GITHUB_REPOS_URL,
                         requestBody: createRepoRequest,
                         quiet: false,
+                        validResponseCodes: '200:404'
                         customHeaders:[[name:'Authorization', value:"token ${GITHUB_TOKEN}"]]
                     )
 
