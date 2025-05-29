@@ -59,6 +59,7 @@ pipeline {
                         validResponseCodes: '200:404',
                         customHeaders:[[name:'Authorization', value:"token ${GITHUB_TOKEN}"]]
                     )
+                    log("response ${createRepoResponse.content}")
 
                     def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
                     sshUrlToRepo = responseMap.ssh_url
