@@ -26,7 +26,7 @@ pipeline {
     }
     environment {
         GITHUB_TOKEN = credentials('github_admin_token')
-        GITHUB_REPOS_URL = "https://api.github.com/SUMITBAURAI/repos"
+        GITHUB_REPOS_URL = "https://api.github.com/user/repos"
     }
     stages {
         stage('Setup'){
