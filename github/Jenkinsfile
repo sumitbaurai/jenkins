@@ -61,6 +61,20 @@ pipeline {
                     )
                     log("response ${createRepoResponse.content}")
 
+
+                    def gitInitScript = """
+                                    git checkout --orphan master
+									git add .
+                                    git commit -m "first commit"
+                                    git push origin master
+                                    git checkout -b develop
+                                    git push origin develop
+                                """
+					checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github_admin_token', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
+					sshagent (credentials: ['github_admin_token']) {
+						sh(script: gitInitScript, returnStdout: true)
+					}
+                    
                     def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
                     sshUrlToRepo = responseMap.ssh_url
                     httpUrlToRepo = responseMap.url
