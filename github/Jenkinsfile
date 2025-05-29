@@ -1,0 +1,116 @@
+def logSeparator = "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+def result = ''
+def sshUrlToRepo = ''
+def httpUrlToRepo = ''
+def environments = ['TEST','UAT','PROD']
+def accessToken = ''
+def isApiPublished= false
+
+def abort(String message)
+{
+    echo "Aborting pipeline..."
+    currentBuild.result = 'ABORTED'
+    error(message)
+}
+
+def log(String message)
+{
+    echo "++++++++++++++++++++++++++ [ ${message} ]"
+}
+
+
+pipeline {
+    agent any
+    parameters {
+      string   name: 'applicationName', defaultValue: 'CHANGEIT-jde-sys-api',  trim: true, description: 'Application Name. This field is required.'
+    }
+    environment {
+        GITHUB_TOKEN = credentials('personal_github')
+        GITHUB_REPOS_URL = "https://api.github.com/sumitbaurai/repos"
+    }
+    stages {
+        stage('Setup'){
+            steps {
+                script{
+                    if (params.applicationName.trim() == '') { abort("Pipeline parameter 'applicationName' cannot be blank.") }
+
+                    currentBuild.displayName = "${applicationName}"
+                    currentBuild.description = "Creating ${applicationName} Repo"
+                           
+                        }
+					}
+                }
+/*                
+        stage('Generate APP'){
+            steps {
+                script {
+					checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'WipeWorkspace']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-imcd', url: 'git@github.com:IMCDGroup-Mulesoft/${apiTemplate}.git']]]
+					sshagent (credentials: ['github-imcd']) {
+						sh "sudo rm -rf inner-archetype && sudo mkdir inner-archetype && cd inner-archetype && git fetch --all"
+						currentVersion = sh(label: "get latest archetype version", returnStdout: true, script: 'git describe').trim()
+					}
+					configFileProvider(
+                    [configFile(fileId: 'global-maven-settings', variable: 'MAVEN_SETTINGS', replaceTokens: true)]) {
+							withCredentials([string(credentialsId: 'cloudhub-DEV-enc-key', variable: 'SECRET')]) {
+								sh "sudo rm -rf inner-archetype && sudo rm -rf archetype-dir && sudo mkdir archetype-dir && cd archetype-dir && sudo mvn archetype:generate -DarchetypeGroupId=com.imcdgroup -DarchetypeArtifactId=${params.apiTemplate} -DarchetypeVersion=${currentVersion} -DgroupId=com.imcdgroup -DartifactId=${params.applicationName.trim()} -Dversion=1.0.0-SNAPSHOT -DapiVersion=${params.apiVersion} -Dentity=${params.entityName} -Devent=${params.methodName} -Dmethod=${params.methodName} -Ddomains=${params.domains} -s $MAVEN_SETTINGS"
+                        }
+                }
+                }
+            }
+        }
+        */
+        
+        stage('Create GitHub repository') {
+            steps {
+                script {  
+                    def createRepoRequest = """
+                    {
+                        \"name\": \"${params.applicationName.trim()}\",
+                        \"description\": \"${params.applicationName.trim()}\",
+                        \"homepage\": \"https://github.com\",
+                        \"private\": true
+                    }
+                    """
+
+                    def createRepoResponse = httpRequest (
+                        httpMode: "POST",
+                        url: GITHUB_REPOS_URL,
+                        requestBody: createRepoRequest,
+                        quiet: false,
+                        customHeaders:[[name:'Authorization', value:"token ${GITHUB_TOKEN}"]]
+                    )
+
+                    def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
+                    sshUrlToRepo = responseMap.ssh_url
+                    httpUrlToRepo = responseMap.url
+                    log("Repository (${sshUrlToRepo}) created")
+
+                    // def gitInitScript = """
+					// 				sudo rm -f  pom.xml 
+					// 				sudo rm -f release.properties 
+					// 				sudo rm -rf src
+					// 				sudo mv ${params.applicationName.trim()}/* .
+					// 				sudo rm -rf ${params.applicationName.trim()}/
+					// 				sudo chmod -R 0777 ./
+                    //                 git checkout --orphan master
+					// 				git add .
+                    //                 git commit -m "first commit"
+                    //                 git push origin master
+                    //                 git checkout -b develop
+                    //                 git push origin develop
+                    //             """
+					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-imcd', url: 'git@github.com:IMCDGroup-Mulesoft/${applicationName}.git']]]
+					// sshagent (credentials: ['github-imcd']) {
+					// 	sh(script: gitInitScript, returnStdout: true)
+					// }
+                    // echo logSeparator
+                }
+            }
+        }
+    }
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
+}
