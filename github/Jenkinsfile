@@ -76,7 +76,7 @@ pipeline {
                             git branch -M master
                             git add .
                             git remote add origin ${GITHUB_REPO_URL}/${params.applicationName.trim()}.git
-                            git push -u origina master
+                            git push -u origin master
                             git checkout -b develop
                             git push origin develop
                         """
