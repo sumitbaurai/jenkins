@@ -27,6 +27,7 @@ pipeline {
     environment {
         GITHUB_TOKEN = credentials('github_admin_token')
         GITHUB_REPOS_URL = "https://api.github.com/user/repos"
+        GITHUB_REPO_URL = "https://github.com/sumitbaurai"
     }
     stages {
         stage('Setup'){
@@ -63,21 +64,27 @@ pipeline {
 
 
                     def gitInitScript = """
-                                    git checkout --orphan master
-									git add .
+                                    sudo chmod -R 0777 ./
+                                    echo "# ${applicationName}" >> README.md
+                                    git init
+                                    git add README.md
+                                    ls -ltra
                                     git commit -m "first commit"
-                                    git push origin master
+                                    git branch -M master
+									git add .
+                                    git remote add origin ${GITHUB_REPO_URL}/${params.applicationName.trime()}.git
+                                    git push -u origina master
                                     git checkout -b develop
                                     git push origin develop
                                 """
                                 // github_credential_with_username
-					checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github_admin_username', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
+					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github_admin_username', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
 					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-imcd', url: 'git@github.com:IMCDGroup-Mulesoft/${applicationName}.git']]]
 
                     // checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-admin-token', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
-					// sshagent (credentials: ['github-admin-token']) {
-					// 	sh(script: gitInitScript, returnStdout: true)
-					// }
+					sshagent (credentials: ['github-admin-token']) {
+						sh(script: gitInitScript, returnStdout: true)
+					}
                     
                     def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
                     sshUrlToRepo = responseMap.ssh_url
