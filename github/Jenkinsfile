@@ -64,11 +64,20 @@ pipeline {
 
                     
                     def gitInitScript = """
-                                    chmod -R 0777 ./
-                                    echo "# ${applicationName}" >> README.md
-                                    ls -ltra
-                                    whoami
-                                """
+                            chmod -R 0777 ./
+                            mkdir "${applicationName}" && cd $_
+                            echo "# ${applicationName}" >> README.md
+                            git init
+                            git add README.md
+                            ls -ltra
+                            git commit -m "first commit"
+                            git branch -M master
+                            git add .
+                            git remote add origin ${GITHUB_REPO_URL}/${params.applicationName.trim()}.git
+                            git push -u origina master
+                            git checkout -b develop
+                            git push origin develop
+                        """
                                 // github_credential_with_username
 					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github_admin_username', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
 					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-imcd', url: 'git@github.com:IMCDGroup-Mulesoft/${applicationName}.git']]]
@@ -105,9 +114,9 @@ pipeline {
             }
         }
     }
-    // post { 
-    //     always { 
-    //         cleanWs()
-    //     }
-    // }
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
 }
