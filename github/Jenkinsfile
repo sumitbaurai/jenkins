@@ -43,24 +43,24 @@ pipeline {
         stage('Create GitHub repository') {
             steps {
                 script {  
-                    def createRepoRequest = """
-                    {
-                        \"name\": \"${params.applicationName.trim()}\",
-                        \"description\": \"${params.applicationName.trim()}\",
-                        \"homepage\": \"https://github.com\",
-                        \"private\": true
-                    }
-                    """
+                    // def createRepoRequest = """
+                    // {
+                    //     \"name\": \"${params.applicationName.trim()}\",
+                    //     \"description\": \"${params.applicationName.trim()}\",
+                    //     \"homepage\": \"https://github.com\",
+                    //     \"private\": true
+                    // }
+                    // """
 
-                    def createRepoResponse = httpRequest (
-                        httpMode: "POST",
-                        url: GITHUB_REPOS_URL,
-                        requestBody: createRepoRequest,
-                        quiet: false,
-                        validResponseCodes: '200:404',
-                        customHeaders:[[name:'Authorization', value:"token ${GITHUB_TOKEN}"]]
-                    )
-                    log("response ${createRepoResponse.content}")
+                    // def createRepoResponse = httpRequest (
+                    //     httpMode: "POST",
+                    //     url: GITHUB_REPOS_URL,
+                    //     requestBody: createRepoRequest,
+                    //     quiet: false,
+                    //     validResponseCodes: '200:404',
+                    //     customHeaders:[[name:'Authorization', value:"token ${GITHUB_TOKEN}"]]
+                    // )
+                    // log("response ${createRepoResponse.content}")
 
                     
                     def gitInitScript = """
@@ -78,10 +78,10 @@ pipeline {
 						sh(script: gitInitScript, returnStdout: true)
 					}
                     
-                    def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
-                    sshUrlToRepo = responseMap.ssh_url
-                    httpUrlToRepo = responseMap.url
-                    log("Repository (${sshUrlToRepo}) created")
+                    // def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
+                    // sshUrlToRepo = responseMap.ssh_url
+                    // httpUrlToRepo = responseMap.url
+                    // log("Repository (${sshUrlToRepo}) created")
 
                 }
 
