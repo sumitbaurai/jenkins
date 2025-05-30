@@ -65,7 +65,7 @@ pipeline {
                     
                     def gitInitScript = """
                             chmod -R 0777 ./
-                            mkdir "${applicationName}" && cd $_
+                            mkdir "${applicationName}" && cd "${applicationName}"
                             echo "# ${applicationName}" >> README.md
                             git init
                             git add README.md
