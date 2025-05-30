@@ -70,6 +70,7 @@ pipeline {
                             git init
                             git add README.md
                             ls -ltra
+                            hostname
                             git config --global user.email "sumit.baurai@gmail.com"
                             git config --global user.name "Sumit Baurai"
                             git commit -m "first commit"
