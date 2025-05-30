@@ -70,17 +70,17 @@ pipeline {
                             hostname
                             mkdir "${applicationName}" && cd "${applicationName}"
                             echo "# ${applicationName}" >> README.md
-                            #git init
-                            #git add README.md
-                            #git config --global user.email "sumit.baurai@gmail.com"
-                            #git config --global user.name "Sumit Baurai"
-                            #git commit -m "first commit"
-                            #git branch -M master
-                            #git add .
-                            #git remote add origin ${GITHUB_REPO_URL}/${params.applicationName.trim()}.git
-                            #git push -u origin master
-                            #git checkout -b develop
-                            #git push origin develop
+                            git init
+                            git add README.md
+                            git config --global user.email "sumit.baurai@gmail.com"
+                            git config --global user.name "Sumit Baurai"
+                            git commit -m "first commit"
+                            git branch -M master
+                            git add .
+                            git remote add origin ${GITHUB_REPO_URL}/${params.applicationName.trim()}.git
+                            git push -u origin master
+                            git checkout -b develop
+                            git push origin develop
                         """
                                 // github_credential_with_username
 					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github_admin_username', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
