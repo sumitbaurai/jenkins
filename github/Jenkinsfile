@@ -48,7 +48,8 @@ pipeline {
                         \"name\": \"${params.applicationName.trim()}\",
                         \"description\": \"${params.applicationName.trim()}\",
                         \"homepage\": \"https://github.com\",
-                        \"private\": true
+                        \"private\": true,
+                        \"auto_init\": true
                     }
                     """
 
