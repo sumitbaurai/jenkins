@@ -78,7 +78,7 @@ pipeline {
 					// 	sh(script: gitInitScript, returnStdout: true)
 					// }
                     sshagent(['local-ssh-agent']) {
-                        sh "whoami"
+                        sh gitInitScript
                     }
                     
                     // def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
