@@ -70,7 +70,8 @@ pipeline {
                                     git checkout -b develop
                                     git push origin develop
                                 """
-					checkout changelog: false, poll: false, scmGit(): [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-admin-token', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
+                                // github_credential_with_username
+					checkout changelog: false, poll: false, scmGit( [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-admin-token', url: 'git@github.com:sumitbaurai/${applicationName}.git']]])
 					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-admin-token', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
 					// sshagent (credentials: ['github-admin-token']) {
 					// 	sh(script: gitInitScript, returnStdout: true)
