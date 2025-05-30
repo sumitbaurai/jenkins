@@ -74,9 +74,12 @@ pipeline {
 					// checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-imcd', url: 'git@github.com:IMCDGroup-Mulesoft/${applicationName}.git']]]
 
                     // checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-admin-token', url: 'git@github.com:sumitbaurai/${applicationName}.git']]]
-					sshagent (credentials: ['local-ssh-agent']) {
-						sh(script: gitInitScript, returnStdout: true)
-					}
+					// sshagent (credentials: ['local-ssh-agent']) {
+					// 	sh(script: gitInitScript, returnStdout: true)
+					// }
+                    sshagent(['local-ssh-agent']) {
+                        sh "whoami"
+                    }
                     
                     // def responseMap = new groovy.json.JsonSlurperClassic().parseText(createRepoResponse.content)
                     // sshUrlToRepo = responseMap.ssh_url
